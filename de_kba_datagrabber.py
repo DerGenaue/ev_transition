@@ -163,6 +163,10 @@ def ensure_up_to_date(force: bool = False):
         if fetch_all(all_fz28) <= 0:
             fetch_all(all_fz28[:1], False)
 
+    # ensure aggregate is up-to-date
+    fz28_1_aggregated()
+
+
 if __name__ == "__main__":
     ensure_up_to_date()
     df = fz28_1_aggregated()
