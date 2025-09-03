@@ -1,6 +1,7 @@
 babel
 nbconvert
 nbformat
+ipykernel
 numpy
 matplotlib
 pandas
