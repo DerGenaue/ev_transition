@@ -8,7 +8,7 @@ import locale
 import pandas as pd
 from typing import List
 
-from utils import override_locale, PowerType, intor
+from utils import override_locale, PowerType, intor, newest_file_in_dir
 
 datafolder = "data/de-kba"
 
@@ -107,14 +107,8 @@ def fz28_1_aggregated() -> pd.DataFrame:
     :return: A dataframe of monthly data aggregated by vehicle type (kfztypes) and power type
     """
 
-    # find newest file
-    all_files = os.listdir(datafolder)
-    latest_mtime = max(
-        (os.path.getmtime(os.path.join(datafolder, filename))
-         for filename in all_files
-         if re.match(r"fz28_([0-9_]+).xlsx", filename)),
-        default=None
-    )
+    # Check if there is a data file newer than the cached pickle
+    _, latest_mtime = newest_file_in_dir(datafolder, "fz28_*.xlsx")
 
     file = f"{datafolder}/fz28_1_aggregated.pkl"
     if os.path.exists(file) and os.path.getmtime(file) > latest_mtime:
@@ -128,10 +122,11 @@ def fz28_1_aggregated() -> pd.DataFrame:
     return df
 
 
-def fetch_all(files: List[str], only_new: bool = True):
+def fetch_all(files: List[str], only_new: bool = True) -> int:
     all_files = os.listdir(datafolder)
 
     fs = len(files)
+    ndown = 0
     for i, file in enumerate(files):
         # get only the filename of the file
         fname = file.split("/")[-1].split("?")[0]
@@ -147,13 +142,28 @@ def fetch_all(files: List[str], only_new: bool = True):
             with open(f"{datafolder}/{fname}", "wb") as f:
                 f.write(response.content)
             print(f"Success")
+            ndown += 1
         except requests.RequestException as e:
             print(f"Error fetching file data: {e}")
             continue
 
+    return ndown
+
+
+def ensure_up_to_date(force: bool = False):
+    """
+    Ensure all the latest files have been downloaded.
+    By default only checks for new files once a day.
+    :return:
+    """
+    _, time = newest_file_in_dir(datafolder, "fz28_*.xlsx")
+    if force or datetime.datetime.fromtimestamp(time) < datetime.datetime.now() - datetime.timedelta(days=1):
+        all_fz28 = fz28_get_list()
+        # make sure at least the latest file is freshly downloaded
+        if fetch_all(all_fz28) <= 0:
+            fetch_all(all_fz28[:1], False)
 
 if __name__ == "__main__":
-    all_fz28 = fz28_get_list()
-    fetch_all(all_fz28)
+    ensure_up_to_date()
     df = fz28_1_aggregated()
     print(df)

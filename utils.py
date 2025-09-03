@@ -1,6 +1,9 @@
+import glob
+import os
 from locale import getlocale, setlocale
 from contextlib import contextmanager
 from enum import StrEnum
+from typing import Tuple
 
 
 class PowerType(StrEnum):
@@ -39,6 +42,10 @@ def floator(val, default=0.0):
         return float(val)
     except (ValueError, TypeError):
         return default
+
+def newest_file_in_dir(dir_name, file_glob='*') -> Tuple[str, float]:
+    fmax = max(glob.glob(os.path.join(dir_name, file_glob)), key=os.path.getmtime)
+    return os.path.basename(fmax), os.path.getmtime(fmax)
 
 @contextmanager
 def override_locale(category, locale_string):
