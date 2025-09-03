@@ -1,1 +1,3 @@
+pandas
+openpyxl
 requests~=2.32.5
