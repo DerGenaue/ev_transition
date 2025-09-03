@@ -1,4 +1,5 @@
 import glob
+import locale
 import os
 from locale import getlocale, setlocale
 from contextlib import contextmanager
@@ -48,10 +49,3 @@ def newest_file_in_dir(dir_name, file_glob='*') -> Tuple[str, float]:
     if fmax is None:
         return '', 0
     return os.path.basename(fmax), os.path.getmtime(fmax)
-
-@contextmanager
-def override_locale(category, locale_string):
-    prev_locale_string = getlocale(category)
-    setlocale(category, locale_string)
-    yield
-    setlocale(category, prev_locale_string)

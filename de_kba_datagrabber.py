@@ -4,11 +4,11 @@ import os
 import requests
 import re
 import datetime
-import locale
+import babel.dates
 import pandas as pd
 from typing import List
 
-from utils import override_locale, PowerType, intor, newest_file_in_dir
+from utils import PowerType, intor, newest_file_in_dir
 
 datafolder = "data/de-kba"
 
@@ -80,9 +80,10 @@ def fz28_1_do_aggregate() -> pd.DataFrame:
             assert "insgesamt" in data.iat[ystart + 3, 10]
             assert "Gas" in data.iat[ystart + 2, -2]
             assert "Wasserstoff" in data.iat[ystart + 2, -1]
-            with override_locale(locale.LC_TIME, 'de_DE'):
-                print(f"{ymonth:%B %Y}")
-                assert data.iat[ystart + 5, 1] == f"{ymonth:%B %Y}"
+
+            month_year = babel.dates.format_date(ymonth, format='MMMM yyyy', locale='de_DE')
+            print(month_year)
+            assert data.iat[ystart + 5, 1] == month_year
 
             for j, kfztype in enumerate(kfztypes):
                 l = ystart + 6 + j
