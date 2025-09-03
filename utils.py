@@ -44,7 +44,9 @@ def floator(val, default=0.0):
         return default
 
 def newest_file_in_dir(dir_name, file_glob='*') -> Tuple[str, float]:
-    fmax = max(glob.glob(os.path.join(dir_name, file_glob)), key=os.path.getmtime)
+    fmax = max(glob.glob(os.path.join(dir_name, file_glob)), key=os.path.getmtime, default=None)
+    if fmax is None:
+        return '', 0
     return os.path.basename(fmax), os.path.getmtime(fmax)
 
 @contextmanager
