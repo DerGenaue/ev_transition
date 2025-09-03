@@ -58,10 +58,10 @@ def fz28_1_do_aggregate() -> pd.DataFrame:
     # Dataframe that will contain car type by fuel type by time
     columns = pd.MultiIndex.from_product([kfztypes, list(PowerType)], names=['Vehicle Type', 'Power Type'])
 
-    # Create an empty DataFrame with empty index and specified columns
-    df = pd.DataFrame(columns=columns)
+    # Create an empty DataFrame with datetime index and specified columns
+    df = pd.DataFrame(columns=columns, index=pd.DatetimeIndex([]))
 
-    all_files = os.listdir(datafolder)
+    all_files = sorted(os.listdir(datafolder))
     for i, file in enumerate(all_files):
         if m := re.match(r"fz28_([0-9]+)_([0-9]+).xlsx", file):
             year, month = m.groups()
@@ -97,7 +97,8 @@ def fz28_1_do_aggregate() -> pd.DataFrame:
                 df.loc[ymonth, (kfztype, PowerType.HCE)] = intor(data.iat[l, -1])
                 assert df.loc[ymonth, kfztype].sum() == intor(data.iat[l, 3])
                 df.loc[ymonth, (kfztype, PowerType.ICE)] = total - intor(data.iat[l, 3])
-
+    
+    df.sort_index(inplace=True)
     return df
 
 
