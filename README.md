@@ -9,9 +9,12 @@ Feel free to check out the different notebooks!
 This notebook plots the data on the electrification of the heavy truck market in Germany, because I couldn't find anybody else doing it.
 Data comes from the FZ 28 publication by the Kraftfahrtbundesamt:
 
-![Heavy verhicles in the german trucking market by fuel type in the last month](figures/de/heavy_vehicles_by_fueltype_latest_month.png)
-![Heavy verhicles in the german trucking market by fuel type in the last 6 months](figures/de/heavy_vehicles_by_fueltype_last_6_months.png)
-![Heavy verhicles in the german trucking market by fuel type in the last 6 months](figures/de/heavy_vehicles_bev_share_plot.png)
+Last month's registration numbers for large buses, trucks and tractor-trailers by fuel type:
+![Heavy vehicles in the german trucking market by fuel type in the last month](figures/de/heavy_vehicles_by_fueltype_latest_month.png)
+The average over the last 6 months:
+![Heavy vehicles in the german trucking market by fuel type in the last 6 months](figures/de/heavy_vehicles_by_fueltype_last_6_months.png)
+The development of the share of BEVs:
+![Heavy vehicles in the german trucking market by fuel type in the last 6 months](figures/de/heavy_vehicles_bev_share_plot.png)
 More plots can be found in the notebook.
 
 ## Interesting Links and Dashboards

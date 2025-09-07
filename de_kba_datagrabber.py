@@ -93,8 +93,8 @@ def fz28_1_do_aggregate() -> pd.DataFrame:
                 df.loc[ymonth, (kfztype, PowerType.FCEV)] = intor(data.iat[l, 8])
                 df.loc[ymonth, (kfztype, PowerType.PHEV)] = intor(data.iat[l, 9])
                 df.loc[ymonth, (kfztype, PowerType.HEV)] = intor(data.iat[l, 10])
-                df.loc[ymonth, (kfztype, PowerType.CNG)] = intor(data.iat[l, -2])
-                df.loc[ymonth, (kfztype, PowerType.HCE)] = intor(data.iat[l, -1])
+                df.loc[ymonth, (kfztype, PowerType.Gas)] = intor(data.iat[l, -2])
+                df.loc[ymonth, (kfztype, PowerType.HY)] = intor(data.iat[l, -1])
                 assert df.loc[ymonth, kfztype].sum() == intor(data.iat[l, 3])
                 df.loc[ymonth, (kfztype, PowerType.ICE)] = total - intor(data.iat[l, 3])
     

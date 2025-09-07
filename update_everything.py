@@ -6,7 +6,7 @@ import glob
 import os
 
 updated_data = []
-""" A list of strings that, if they appear in a notebook, will trigger a re-run of the notebook """
+""" A list of (short name, match string, explanation) tuples that, if the match string appears in a notebook, will trigger a re-run of the notebook """
 
 
 
@@ -21,7 +21,7 @@ modified_files = git_output.splitlines()
 
 # If any of the kba FZ28 files have been updated, all notebooks using functions with fz28 in the name should be updated
 if any(file.startswith('data/de-kba/fz28') for file in modified_files):
-    updated_data.append('fz28')
+    updated_data.append(('KBA FZ28', 'fz28', 'Germany KBA FZ 28 alternative Antriebe'))
 
 print(f'Updated data: {updated_data}')
 
@@ -36,7 +36,7 @@ if updated_data:
             nb_content = f.read()
 
             # Check if notebook uses updated data
-            if any(data in nb_content for data in updated_data):
+            if any(match in nb_content for (_, match, _) in updated_data):
                 print(f'Re-running notebook: {notebook_path}')
                 try:
                     # Load and execute notebook
@@ -52,3 +52,10 @@ if updated_data:
                         nbformat.write(nb, f)
                 except Exception as e:
                     print(f'Error executing {notebook_path}: {e}')
+
+
+##### Write update info to log file
+with open('updated_data.log', 'w') as f:
+   f.write(', '.join(map((lambda d: d[0]), updated_data)))
+   f.write('\n')
+   f.write('\n'.join(map((lambda d: d[2]), updated_data)))
