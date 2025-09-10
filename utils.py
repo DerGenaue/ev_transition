@@ -6,6 +6,9 @@ from contextlib import contextmanager
 from enum import StrEnum
 from typing import Tuple
 
+import numpy as np
+import pandas as pd
+
 
 class PowerType(StrEnum):
     """Enum representing different vehicle power types"""
@@ -66,3 +69,26 @@ def newest_file_in_dir(dir_name, file_glob='*') -> Tuple[str, float]:
     if fmax is None:
         return '', 0
     return os.path.basename(fmax), os.path.getmtime(fmax)
+
+
+
+def correlate_slice_normalized(a: np.ndarray, v: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Correlate a and v normalized to the maximum possible correlation for each offset (boundary effects!)
+    """
+    if len(v) > len(a):
+        a, v = v, a
+    # fix nans
+    a, v = np.nan_to_num(a), np.nan_to_num(v) 
+    L, l = len(a), len(v)
+    offsets = np.arange(-l+2,L+1)
+    norm_by_slice_a = np.correlate(a*a, np.ones(v.shape), mode='full')
+    norm_by_slice_v = np.correlate(np.ones(a.shape), v*v, mode='full')
+    corrs = 2 * np.correlate(a, v, mode='full') / (norm_by_slice_a + norm_by_slice_v)
+    return offsets, corrs
+
+def df_shift_index(df: pd.DataFrame, n) -> pd.DataFrame:
+    """ Shifts the index of a dataframe by n """
+    df = df.copy()
+    df.index = df.index + n
+    return df

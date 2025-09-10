@@ -4,6 +4,9 @@ nbformat
 ipykernel
 numpy
 matplotlib
+owid-catalog
+py-xdrlib
+uv
 pandas
 openpyxl
 requests~=2.32.5
