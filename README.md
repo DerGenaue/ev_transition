@@ -17,6 +17,17 @@ The development of the share of BEVs:
 ![Heavy vehicles in the german trucking market by fuel type in the last 6 months](figures/de/heavy_vehicles_bev_share_plot.png)
 More plots can be found in the notebook.
 
+
+## [Aligned global EV sales trajectories](world_ev_trajectories.ipynb)
+
+The development of the sales share of EVs is similar in all countries.  
+Under this assumption, we can align all the trajectories by shifting them in time to arrive at an average trajectory:
+![Trajectories of the sales share of all countries time-aligned](figures/world/ev_trajectories/all_ev_trajectories.png)
+
+The notebook also shows the individual countries' plots extended by the average trajectory.
+
+
+
 ## Interesting Links and Dashboards
 
 #### https://robbieandrew.github.io/carsales/
