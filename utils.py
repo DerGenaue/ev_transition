@@ -72,14 +72,14 @@ def newest_file_in_dir(dir_name, file_glob='*') -> Tuple[str, float]:
 
 
 
-def correlate_slice_normalized(a: np.ndarray, v: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+def correlate_slice_normalized(a: np.ndarray, v: np.ndarray, epsilon=0.00) -> Tuple[np.ndarray, np.ndarray]:
     """
     Correlate a and v normalized to the maximum possible correlation for each offset (boundary effects!)
     """
     if len(v) > len(a):
         a, v = v, a
     # fix nans
-    a, v = np.nan_to_num(a), np.nan_to_num(v) 
+    a, v = np.nan_to_num(a) + epsilon, np.nan_to_num(v) + epsilon
     L, l = len(a), len(v)
     offsets = np.arange(-l+2,L+1)
     norm_by_slice_a = np.correlate(a*a, np.ones(v.shape), mode='full')
