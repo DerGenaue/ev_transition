@@ -72,19 +72,19 @@ def newest_file_in_dir(dir_name, file_glob='*') -> Tuple[str, float]:
 
 
 
-def correlate_slice_normalized(a: np.ndarray, v: np.ndarray, epsilon=0.00) -> Tuple[np.ndarray, np.ndarray]:
+def correlate_slice_normalized(a: np.ndarray, v: np.ndarray, epsilon=0.001) -> Tuple[np.ndarray, np.ndarray]:
     """
     Correlate a and v normalized to the maximum possible correlation for each offset (boundary effects!)
     """
     if len(v) > len(a):
         a, v = v, a
     # fix nans
-    a, v = np.nan_to_num(a) + epsilon, np.nan_to_num(v) + epsilon
+    a, v = np.nan_to_num(a), np.nan_to_num(v)
     L, l = len(a), len(v)
     offsets = np.arange(-l+2,L+1)
     norm_by_slice_a = np.correlate(a*a, np.ones(v.shape), mode='full')
     norm_by_slice_v = np.correlate(np.ones(a.shape), v*v, mode='full')
-    corrs = 2 * np.correlate(a, v, mode='full') / (norm_by_slice_a + norm_by_slice_v)
+    corrs = 2 * np.correlate(a, v, mode='full') / (norm_by_slice_a + norm_by_slice_v + epsilon)
     return offsets, corrs
 
 def df_shift_index(df: pd.DataFrame, n) -> pd.DataFrame:
@@ -92,3 +92,34 @@ def df_shift_index(df: pd.DataFrame, n) -> pd.DataFrame:
     df = df.copy()
     df.index = df.index + n
     return df
+
+def frequency_in_year(freq):
+    return len(pd.date_range(start=pd.Timestamp('2000-01-01'), end=pd.Timestamp('2000-12-31'), freq=freq, normalize=True))
+
+def delta_frequency_to_string(dt, freq):
+    fy = frequency_in_year(freq)
+    sign = '' if dt >= 0 else '-'
+    dt = abs(dt)
+    y = int(dt / fy)
+    r = dt % fy
+    
+    result = []
+    
+    if y != 0:
+        result.append(f"{y} year{'' if abs(y) == 1 else 's'}")
+    
+    
+    if r != 0:
+        if fy == 4:
+            funit = 'quarter'
+        elif fy == 12:
+            funit = 'month'
+        elif fy == 52:
+            funit = 'week'
+        elif fy < 367:
+            funit = 'day'
+        else:
+            funit = ''
+        result.append(f"{r} {funit}{'' if abs(r)==1 else 's'}")
+    
+    return sign + ' '.join(result)
