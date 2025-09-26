@@ -208,10 +208,10 @@ def fz8_3_segments_do_aggregate() -> pd.DataFrame:
                     if not cngmissing:
                         df.loc[ymonth, (segment, PowerType.CNG)] = intor(data.iat[i, 11])
                     df.loc[ymonth, (segment, PowerType.LPG)] = intor(data.iat[i, -4])
-                    df.loc[ymonth, (segment, PowerType.HEV)] = intor(data.iat[i, -3])
+                    # HEV include PHEV in the data, but we want it separately
+                    df.loc[ymonth, (segment, PowerType.HEV)] = intor(data.iat[i, -3]) - intor(data.iat[i, -2])
                     df.loc[ymonth, (segment, PowerType.PHEV)] = intor(data.iat[i, -2])
                     df.loc[ymonth, (segment, PowerType.BEV)] = intor(data.iat[i, -1])
-                    # TODO: diesel & benzin includes PHEV & HEV, so need to fix math
                     sum_specific = df.loc[ymonth, segment].sum()
                     df.loc[ymonth, (segment, PowerType.Other)] = total - sum_specific
 
@@ -238,6 +238,78 @@ def fz8_3_segments_aggregated() -> pd.DataFrame:
     df = fz8_3_segments_do_aggregate()
     df.to_pickle(file)
     df.to_csv(f"{datafolder}/fz8_3_segments_aggregated.csv")
+    return df
+
+
+def fz8_3_models_get(yyyymm=None) -> pd.DataFrame:
+    """
+    Gets the by-model date from a single downloaded monthly file data from table FZ 8.3:
+    FZ 8.3 Neuzulassungen von Personenkraftwagen im Juli 2025 nach Segmenten, Modellreihen, Kraftstoffarten, CO2-Emissionen und Kraftstoffverbrauch
+    :return: A dataframe of PKW model data
+    """
+
+    # Dataframe that will contain car type by fuel type by time
+    columns = pd.MultiIndex.from_product([[], list(PowerType)], names=['Segment', 'Power Type'])
+
+    # Create an empty DataFrame with datetime index and specified columns
+    df = pd.DataFrame(columns=columns, index=pd.DatetimeIndex([]))
+
+    all_files = sorted(os.listdir(datafolder), reverse=True)
+    for i, file in enumerate(all_files):
+        if m := re.match(r"fz8_([0-9]{4})([0-9]{2}).xlsx", file):
+            year, month = m.groups()
+            if yyyymm and yyyymm != f"{year}{month}":
+                continue
+            
+            ymonth = datetime.date(int(year), int(month), 1)
+            data = pd.read_excel(f"{datafolder}/{file}", sheet_name="FZ 8.3", dtype=str, na_filter=False)
+
+            # Some individual months apparently accidentally have a line missing, so we need to adjust
+            ystart = 6 if data.iat[6, 1] == "Segment" else 5
+
+            # sanity checks
+            assert "Segment" == data.iat[ystart, 1]
+            assert "Benzin" in data.iat[ystart + 1, 5]
+            assert "Diesel" in data.iat[ystart + 1, 8]
+            cngmissing = True
+            if "CNG" in data.iat[ystart + 1, 11]:
+                cngmissing = False
+            assert "LPG" in data.iat[ystart + 1, -4]
+            assert "Hybrid" in data.iat[ystart + 1, -3]
+            assert "Plug-in" in data.iat[ystart + 2, -2]
+            assert "BEV" in data.iat[ystart + 1, -1]
+
+            month_year = babel.dates.format_date(ymonth, format='MMMM yyyy', locale='de_DE')
+            print(month_year)
+            assert month_year in data.iat[4, 1]
+            
+            thismdata = {}
+            for i in data.index:
+                if i > ystart and (model := str(data.iat[i, 2])):
+                    total = intor(data.iat[i, 3])
+                    newdata = {
+                        PowerType.ICE_P: intor(data.iat[i, 5]),
+                        PowerType.ICE_D: intor(data.iat[i, 8]),
+                        PowerType.LPG: intor(data.iat[i, -4]),
+                        # HEV include PHEV in the data, but we want it separately
+                        PowerType.HEV: intor(data.iat[i, -3]) - intor(data.iat[i, -2]),
+                        PowerType.PHEV: intor(data.iat[i, -2]),
+                        PowerType.BEV: intor(data.iat[i, -1]),
+                    }
+                    if not cngmissing:
+                        newdata[PowerType.CNG] = intor(data.iat[i, 11])
+                    # HEV include PHEV in the data, but we want it separately
+                    sum_specific = sum(newdata.values())
+                    newdata[PowerType.Other] = total - sum_specific
+                    
+                    if model in thismdata:
+                        # model appears twice in data; sum up
+                        olddata = thismdata[model]
+                        newdata = {k: newdata.get(k, 0) + olddata.get(k, 0) for k in set(newdata) | set(olddata)}
+                    thismdata[model] = newdata
+            return pd.DataFrame.from_dict(thismdata, orient="index")
+
+    df.sort_index(inplace=True)
     return df
 
 
@@ -299,5 +371,6 @@ def ensure_up_to_date(force: bool = False):
 
 if __name__ == "__main__":
     ensure_up_to_date()
-    df = fz8_3_segments_aggregated()
+    #df = fz8_3_segments_aggregated()
+    df = fz8_3_models_get()
     print(df)
