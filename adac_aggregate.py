@@ -16,7 +16,7 @@ def aggregate_adac_price_data(ignore_manufacture_end_before=2021) -> pd.DataFram
     aggregated_data = pd.DataFrame(columns=['NAME', 'fuelType', 'min_price', 'max_price', 'avg_price', 'med_price'])
     aggregated_data.set_index(['NAME', 'fuelType'], inplace=True)
 
-    for name in data.keys():
+    for name in set(data.keys()).union(set(name_map.keys())):
         
         mapped_names = name
         # re-aggregate data according to name_map
@@ -60,7 +60,7 @@ def aggregate_adac_price_data(ignore_manufacture_end_before=2021) -> pd.DataFram
                     tmp_df[fuel_type].mean(),
                     tmp_df[fuel_type].median(),
                 ]
-
+    aggregated_data.sort_index(inplace=True)
     return aggregated_data
 
 
