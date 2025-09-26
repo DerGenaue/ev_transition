@@ -153,3 +153,5 @@ update-alternatives --install /usr/bin/python python /usr/bin/python3 1
 
 # Collected static folder
 /static/
+
+/_*.py

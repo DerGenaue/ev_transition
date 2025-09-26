@@ -50,6 +50,9 @@ class PowerType(StrEnum):
     
     HY = "HY"
     """Hydrogen - Unclear specification if HCE or FCEV"""
+    
+    Other = "Other"
+    """Other - Unspecified"""
 
 
 def intor(val, default=0):

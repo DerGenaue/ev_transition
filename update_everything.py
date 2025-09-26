@@ -22,6 +22,10 @@ modified_files = git_output.splitlines()
 # If any of the kba FZ28 files have been updated, all notebooks using functions with fz28 in the name should be updated
 if any(file.startswith('data/de-kba/fz28') for file in modified_files):
     updated_data.append(('KBA FZ28', 'fz28', 'Germany KBA FZ 28 alternative Antriebe'))
+    
+# If any of the kba FZ28 files have been updated, all notebooks using functions with fz28 in the name should be updated
+if any(file.startswith('data/de-kba/fz8') for file in modified_files):
+    updated_data.append(('KBA FZ8', 'fz8', 'Germany KBA FZ 8 Neuzulassungen'))
 
 print(f'Updated data: {updated_data}')
 
