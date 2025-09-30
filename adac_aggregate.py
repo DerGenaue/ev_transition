@@ -4,7 +4,7 @@ import re
 import pandas as pd
 from unidecode import unidecode
 
-def aggregate_adac_price_data(ignore_manufacture_end_before=2021) -> pd.DataFrame:
+def aggregate_adac_price_data(ignore_manufacture_end_before=2020) -> pd.DataFrame:
 
     # Files have ben manually created using the ADAC Autosuche
     with open('../ADAC-AllData-names.json', 'r', encoding='utf-8') as file:
