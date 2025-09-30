@@ -11,10 +11,8 @@ Feel free to check out the different notebooks!
 This notebook prepares data on the share of electric car sales by price in Germany.
 
 The results can be seen here:  
-[Anteil Antriebsarten nach Listenpreis im August 2025 von 10 - 120k](https://www.datawrapper.de/_/PSqha/)
-
-<iframe title="Anteil Antriebsarten nach Listenpreis im August 2025" aria-label="Scatterplot" id="datawrapper-chart-PSqha" src="https://datawrapper.dwcdn.net/PSqha/3/" scrolling="no" frameborder="0" style="width: 0; min-width: 100% !important; border: none;" height="805" data-external="1"></iframe><script type="text/javascript">!function(){"use strict";window.addEventListener("message",function(a){if(void 0!==a.data["datawrapper-height"]){var e=document.querySelectorAll("iframe");for(var t in a.data["datawrapper-height"])for(var r,i=0;r=e[i];i++)if(r.contentWindow===a.source){var d=a.data["datawrapper-height"][t]+"px";r.style.height=d}}})}();
-</script>
+Interactive version: [Anteil Antriebsarten nach Listenpreis im August 2025 von 10 - 120k](https://www.datawrapper.de/_/PSqha/)
+![Heavy vehicles in the german trucking market by fuel type in the last month](figures/de/PSqha-anteil-antriebsarten-nach-listenpreis-im-august-2025.png)
 
 ------
 
