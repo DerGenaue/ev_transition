@@ -69,10 +69,10 @@ def fz28_1_do_aggregate() -> pd.DataFrame:
             data = pd.read_excel(f"{datafolder}/{file}", sheet_name="FZ 28.1")
 
             # Some individual months apparently accidentally have a line missing, so we need to adjust
-            ystart = 6 if data.iat[6, 1] == "Fahrzeugklasse" else 5
+            ystart = 6 if data.iat[6, 1] in ["Fahrzeugklasse", "Fahrzeugarten"] else 5
 
             # sanity checks
-            assert "Fahrzeugklasse" == data.iat[ystart, 1]
+            assert data.iat[ystart, 1] in ["Fahrzeugklasse", "Fahrzeugarten"]
             assert "Elektro" in data.iat[ystart + 4, 7]
             assert "Brennstoffzelle" in data.iat[ystart + 4, 8]
             assert "Plug-in-Hybrid" in data.iat[ystart + 4, 9]
